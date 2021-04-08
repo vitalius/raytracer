@@ -67,8 +67,8 @@ func (r Ray) hit_sphere(center Vec3, radius float64) float64 {
 }
 
 func main() {
-    img_width := 4000
-    img_height:= 2000
+    img_width := 400
+    img_height:= 200
     b := NewBitmap(img_width, img_height)
 
     llc_o := Vec3{-2.0, -1.0, -1.0}
