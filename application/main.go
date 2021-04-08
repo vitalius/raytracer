@@ -2,8 +2,13 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
+	"log"
 	"math"
+	"os"
+	"path/filepath"
 
+	. "raytracer/utils/input"
 	. "raytracer/utils/raster"
 	. "raytracer/utils/vector"
 )
@@ -23,6 +28,23 @@ func (r Ray) dir() Vec3 {
 func (r Ray) point(t float64) Vec3 {
     s := r.B.Scale(t)
     return r.A.Add(s)
+}
+
+func LoadSceneFile (filename string) Scene {
+    jsonFile, open_err := os.Open(filename)
+    if open_err != nil {
+		log.Fatal(open_err)
+    }
+
+    defer jsonFile.Close()
+
+    jsonBytes, read_err := ioutil.ReadAll(jsonFile)
+    if read_err != nil {
+		log.Fatal(read_err)
+    }
+
+    var scene = LoadFromJson(jsonBytes)
+    return scene
 }
 
 func (r Ray) color() Vec3 {
@@ -67,11 +89,22 @@ func (r Ray) hit_sphere(center Vec3, radius float64) float64 {
 }
 
 func main() {
-    img_width := 400
-    img_height:= 200
+
+    // no scene file, show help message
+    if len(os.Args) < 2 {
+        fmt.Printf("Specify scene description file (JSON)\n")
+        fmt.Printf("\t%s <scene_file.json>\n", filepath.Base(os.Args[0]) )
+        return;
+    }
+
+    // load scene file
+    var scene = LoadSceneFile(os.Args[1])
+
+    img_width := scene.Raster.Width
+    img_height:= scene.Raster.Height
     b := NewBitmap(img_width, img_height)
 
-    llc_o := Vec3{-2.0, -1.0, -1.0}
+    llc_o := scene.Screen.LowerLeft
     hor_o := Vec3{4.0, 0.0, 0.0}
     ver_o := Vec3{0.0, 2.0, 0.0}
     org_o := Vec3{0.0, 0.0, 0.0}
