@@ -6,6 +6,14 @@ type Vec3 struct {
     X, Y, Z float64
 }
 
+func BuildVec3 (x,y,z float64) Vec3 {
+    var v Vec3
+    v.X = x
+    v.Y = y
+    v.Z = z
+    return v
+}
+
 func (r Vec3) Add(s Vec3) Vec3 {
     r.X += s.X
     r.Y += s.Y

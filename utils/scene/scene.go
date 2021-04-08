@@ -1,4 +1,4 @@
-package input
+package scene
 
 import (
 	"encoding/json"
