@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"math"
 
-	. "../utils/raster"
-	. "../utils/vector"
+	. "raytracer/utils/raster"
+	. "raytracer/utils/vector"
 )
 
 type Ray struct {
