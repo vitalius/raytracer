@@ -24,14 +24,14 @@ func (r Ray) Point(t float64) Vec3 {
 
 
 func (r *Ray) Color() Vec3 {
-    sphere_c := Vec3{0.0, 0.0, -1.0}
+    sphere_c := BuildVec3(0.0, 0.0, -1.0)
     sphere_r := float64(0.5)
     hit := r.hit_sphere(sphere_c, sphere_r)
     if hit > 0.0 {
         pat := r.Point(hit)
-        pat = pat.Subtract(Vec3{0,0,-1})
+        pat = pat.Subtract(BuildVec3(0,0,-1))
         n := pat.Unit()        
-        res := Vec3{n.X+1.0, n.Y+1.0, n.Z+1.0}
+        res := BuildVec3(n.X+1.0, n.Y+1.0, n.Z+1.0)
         return res.Scale(0.5)
     }
 
@@ -40,10 +40,10 @@ func (r *Ray) Color() Vec3 {
 
     t := 0.5*(direction.Y + 1.0)
     
-    start := Vec3{0.5, 0.7, 1.0}
+    start := BuildVec3(0.5, 0.7, 1.0)
     start = start.Scale(1.0-t)
 
-    end := Vec3{1.0, 1.0, 1.0}
+    end := BuildVec3(1.0, 1.0, 1.0)
     end = end.Scale(t)
 
     result:=start.Add(end)

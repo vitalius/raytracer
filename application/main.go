@@ -34,7 +34,10 @@ func LoadSceneFile (filename string) Scene {
     return scene
 }
 
-
+//
+// Split star/end into buckets (count)
+//   used in splitting Y column of rendering for coroutines
+//
 func YWorkSplit(start, end, count int) [][]int {
     var bucket_size = int(math.Ceil(float64(end-start)/float64(count)))
     var result = make([][]int, 0)
@@ -83,7 +86,7 @@ func main() {
     ver_o := BuildVec3(0.0, 2.0, 0.0)
     org_o := BuildVec3(0.0, 0.0, 0.0)
 
-    var y_split = YWorkSplit(0, img_height, 8)
+    var y_split = YWorkSplit(0, img_height, 16)
 
     var wg sync.WaitGroup
 
