@@ -4,8 +4,11 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"math"
 	"os"
 	"path/filepath"
+	"sync"
+	"time"
 
 	. "raytracer/utils/raster"
 	. "raytracer/utils/ray"
@@ -31,6 +34,34 @@ func LoadSceneFile (filename string) Scene {
     return scene
 }
 
+
+func YWorkSplit(start, end, count int) [][]int {
+    var bucket_size = int(math.Ceil(float64(end-start)/float64(count)))
+    var result = make([][]int, 0)
+    if (bucket_size < 1) {
+        var use_all = []int{start,end}
+        return append(result, use_all)
+    }
+    var i = end;
+    
+    for i > bucket_size {
+        i -= bucket_size
+        result = append(result, []int{i+bucket_size, i})
+    }
+    result = append(result, []int{i,start})
+
+    return result
+}
+
+
+func worker(y []int, wg *sync.WaitGroup) {
+    defer wg.Done()    
+    fmt.Printf("Worker %d starting\n", y)
+    time.Sleep(time.Second)
+    fmt.Printf("Worker %d done\n", y)
+}
+
+
 func main() {
 
     // no scene file, show help message
@@ -52,25 +83,36 @@ func main() {
     ver_o := BuildVec3(0.0, 2.0, 0.0)
     org_o := BuildVec3(0.0, 0.0, 0.0)
 
-    for y := img_height - 1; y >= 0; y-- {
-        for x := 0; x < img_width; x++ {
-            u := float64(x) / float64(img_width)
-            v := float64(y) / float64(img_height)
-            hor := hor_o.Scale(u)
-            ver := ver_o.Scale(v)
-            hor = hor.Add(ver)
-            llc := llc_o.Add(hor)
+    var y_split = YWorkSplit(0, img_height, 8)
 
-            ray := Ray {A:org_o, B:llc}
-            c := ray.Color()
+    var wg sync.WaitGroup
 
-            red := byte( 255.99*c.X )
-            green := byte( 255.99*c.Y )
-            blue := byte(255.99*c.Z)
+    for _, bucket := range y_split {
+        wg.Add(1)
+        go func(y1, y2, img_width int, b *Bitmap, hor_o, ver_o, llc_o, org_o Vec3) {
+            defer wg.Done()
+            for y := y1 - 1; y >= y2; y-- {
+                for x := 0; x < img_width; x++ {
+                        u := float64(x) / float64(img_width)
+                        v := float64(y) / float64(img_height)
+                        hor := hor_o.Scale(u)
+                        ver := ver_o.Scale(v)
+                        hor = hor.Add(ver)
+                        llc := llc_o.Add(hor)
 
-            b.SetPx(x,y,Pixel{R:red, G:green, B:blue});
+                        ray := Ray {A:org_o, B:llc}
+                        c := ray.Color()
+
+                        red := byte( 255.99*c.X )
+                        green := byte( 255.99*c.Y )
+                        blue := byte(255.99*c.Z)
+
+                        b.SetPx(x,y,Pixel{R:red, G:green, B:blue})
+                    }
+                }
+            }(bucket[0], bucket[1], img_width, b, hor_o, ver_o, llc_o, org_o)
         }
-    }
+    wg.Wait()
 
     err := b.WritePngFile("output.png")
     if err != nil {
