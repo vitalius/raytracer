@@ -10,9 +10,9 @@ import (
 	"sync"
 	"time"
 
+	. "raytracer/pkg/ray"
+	. "raytracer/pkg/scene"
 	. "raytracer/utils/raster"
-	. "raytracer/utils/ray"
-	. "raytracer/utils/scene"
 	. "raytracer/utils/vector"
 )
 
@@ -35,8 +35,9 @@ func LoadSceneFile (filename string) Scene {
 }
 
 //
-// Split star/end into buckets (count)
-//   used in splitting Y column of rendering for coroutines
+// Split start/end into a number of buckets (count)
+//   used in splitting Y column for coroutine rendering
+//   is about 30% speed up in rendering
 //
 func YWorkSplit(start, end, count int) [][]int {
     var bucket_size = int(math.Ceil(float64(end-start)/float64(count)))
@@ -104,7 +105,7 @@ func main() {
                         llc := llc_o.Add(hor)
 
                         ray := Ray {A:org_o, B:llc}
-                        c := ray.Color()
+                        c := ray.Color(scene.Spheres[0])
 
                         red := byte( 255.99*c.X )
                         green := byte( 255.99*c.Y )
