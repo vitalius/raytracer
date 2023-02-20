@@ -50,3 +50,11 @@ func (r Vec3) Unit () Vec3 {
 func (r Vec3) Dot( a, b Vec3) float64 {
     return a.X*b.X + a.Y*b.Y + a.Z*b.Z
 }
+
+func (r Vec3) ToRgb() [3]byte {
+    result := [3]byte {0x0, 0x0, 0x0}
+    result[0] = byte( 255.99*r.X )
+    result[1] = byte( 255.99*r.Y )
+    result[2] = byte( 255.99*r.Z )
+    return result
+}

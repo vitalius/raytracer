@@ -1,7 +1,7 @@
 {
         "raster": {
-            "width":  4000,
-            "height": 2000
+            "width":  400,
+            "height": 200
         },
         "camera": {
             "location":   {"X": 0, "Y":0, "Z":0},
@@ -15,6 +15,10 @@
             {
                 "center": {"X":0.0, "Y":0.0, "Z":-1.0},
                 "radius": 0.5
-            }           
+            },
+            {
+                "center": {"X":0.0, "Y":30.5, "Z":-1.0},
+                "radius": 30
+            } 
         ]
 }

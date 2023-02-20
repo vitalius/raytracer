@@ -37,7 +37,7 @@ func LoadSceneFile (filename string) Scene {
 //
 // Split start/end into a number of buckets (count)
 //   used in splitting Y column for coroutine rendering
-//   is about 30% speed up in rendering
+//   could be 30% speedup in rendering
 //
 func YWorkSplit(start, end, count int) [][]int {
     var bucket_size = int(math.Ceil(float64(end-start)/float64(count)))
@@ -105,13 +105,13 @@ func main() {
                         llc := llc_o.Add(hor)
 
                         ray := Ray {A:org_o, B:llc}
-                        c := ray.Color(scene.Spheres[0])
 
-                        red := byte( 255.99*c.X )
-                        green := byte( 255.99*c.Y )
-                        blue := byte(255.99*c.Z)
-
-                        b.SetPx(x,y,Pixel{R:red, G:green, B:blue})
+                        color := BuildVec3(0,0,0)
+                        for _, s := range scene.Spheres {
+                            color = color.Add(ray.Color(s))
+                        }
+                        c := color.ToRgb()
+                        b.SetPx(x,y,Pixel{R:c[0], G:c[1], B:c[2]})
                     }
                 }
             }(bucket[0], bucket[1], img_width, b, hor_o, ver_o, llc_o, org_o)

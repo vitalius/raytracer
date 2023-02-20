@@ -26,11 +26,14 @@ func (r Ray) Point(t float64) Vec3 {
 func (r *Ray) Color(sphere Sphere) Vec3 {
     hit := r.Hit(sphere)
     if hit > 0.0 {
+        return BuildVec3(0.9, 0.0, 0.0)
+        /*
         pat := r.Point(hit)
         pat = pat.Subtract(BuildVec3(0,0,-1))
-        n := pat.Unit()        
+        n := pat.Unit()
         res := BuildVec3(n.X+1.0, n.Y+1.0, n.Z+1.0)
         return res.Scale(0.5)
+        */
     }
 
     direction := r.Direction()
