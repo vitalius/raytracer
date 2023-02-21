@@ -110,7 +110,7 @@ func main() {
 
                         color := ray.Color(scene.Spheres)
                         c := color.ToRgb()
-                        b.SetPx(x,img_height-y,Pixel{R:c[0], G:c[1], B:c[2]})
+                        b.SetPx(x,img_height-y-1,Pixel{R:c[0], G:c[1], B:c[2]})
                 }
             }            
             /*
