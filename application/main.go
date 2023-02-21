@@ -86,7 +86,7 @@ func main() {
     hor_o := BuildVec3(4.0, 0.0, 0.0)
     ver_o := BuildVec3(0.0, 2.0, 0.0)
     org_o := BuildVec3(0.0, 0.0, 0.0)
-
+/*
     var y_split = YWorkSplit(0, img_height, 16)
 
     var wg sync.WaitGroup
@@ -96,9 +96,11 @@ func main() {
         go func(y1, y2, img_width int, b *Bitmap, hor_o, ver_o, llc_o, org_o Vec3) {
             defer wg.Done()
             for y := y1 - 1; y >= y2; y-- {
+*/            
+            for y := img_height-1; y >= 0; y-- {
                 for x := 0; x < img_width; x++ {
-                        u := float64(x) / float64(img_width)
-                        v := float64(y) / float64(img_height)
+                        u := float64(x) / float64(img_width-1)
+                        v := float64(y) / float64(img_height-1)
                         hor := hor_o.Scale(u)
                         ver := ver_o.Scale(v)
                         hor = hor.Add(ver)
@@ -106,18 +108,16 @@ func main() {
 
                         ray := Ray {A:org_o, B:llc}
 
-                        color := BuildVec3(0,0,0)
-                        for _, s := range scene.Spheres {
-                            color = color.Add(ray.Color(s))
-                        }
+                        color := ray.Color(scene.Spheres)
                         c := color.ToRgb()
-                        b.SetPx(x,y,Pixel{R:c[0], G:c[1], B:c[2]})
-                    }
+                        b.SetPx(x,img_height-y,Pixel{R:c[0], G:c[1], B:c[2]})
                 }
+            }            
+            /*
             }(bucket[0], bucket[1], img_width, b, hor_o, ver_o, llc_o, org_o)
         }
     wg.Wait()
-
+*/
     err := b.WritePngFile("output.png")
     if err != nil {
         fmt.Println(err)

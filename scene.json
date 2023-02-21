@@ -1,7 +1,7 @@
 {
         "raster": {
-            "width":  400,
-            "height": 200
+            "width":  800,
+            "height": 400
         },
         "camera": {
             "location":   {"X": 0, "Y":0, "Z":0},
@@ -11,14 +11,14 @@
             "lower_left":  {"X":-2.0, "Y":-1.0, "Z":-1.0},
             "upper_right": {"X":2.0, "Y":1.0, "Z":-1.0}
         },
-        "spheres": [
+        "spheres": [          
             {
                 "center": {"X":0.0, "Y":0.0, "Z":-1.0},
                 "radius": 0.5
             },
             {
-                "center": {"X":0.0, "Y":30.5, "Z":-1.0},
-                "radius": 30
-            } 
+                "center": {"X":0.0, "Y":-100.5, "Z":-1.0},
+                "radius": 100
+            }            
         ]
 }

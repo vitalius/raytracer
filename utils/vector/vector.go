@@ -47,7 +47,7 @@ func (r Vec3) Unit () Vec3 {
     return r
 }
 
-func (r Vec3) Dot( a, b Vec3) float64 {
+func (r Vec3) Dot(a, b Vec3) float64 {
     return a.X*b.X + a.Y*b.Y + a.Z*b.Z
 }
 

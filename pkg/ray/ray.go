@@ -1,10 +1,16 @@
 package ray
 
 import (
+    //"fmt"
 	"math"
 	. "raytracer/pkg/object"
 	. "raytracer/utils/vector"
 )
+
+type HitRecord struct {
+    p, normal Vec3
+    t float64
+}
 
 type Ray struct {
 	A, B Vec3
@@ -23,44 +29,66 @@ func (r Ray) Point(t float64) Vec3 {
 	return r.A.Add(s)
 }
 
-func (r *Ray) Color(sphere Sphere) Vec3 {
-    hit := r.Hit(sphere)
-    if hit > 0.0 {
-        return BuildVec3(0.9, 0.0, 0.0)
-        /*
-        pat := r.Point(hit)
-        pat = pat.Subtract(BuildVec3(0,0,-1))
-        n := pat.Unit()
-        res := BuildVec3(n.X+1.0, n.Y+1.0, n.Z+1.0)
-        return res.Scale(0.5)
-        */
+func (r *Ray) Color(spheres []Sphere) Vec3 {
+    hr := HitRecord {p:BuildVec3(0,0,0), normal:BuildVec3(0,0,0), t:0.0}
+    hitSomething := false
+    closest := hr
+    closest.t = 10000
+
+    for _, s := range spheres {     
+        hit := r.Hit(s, &hr)
+        if hit && hr.t < closest.t {
+            closest = hr
+            hitSomething = true
+        }
+    }
+    if (hitSomething) {
+        return BuildVec3(1,1,1).Add(closest.normal).Scale(0.5)
     }
 
-    direction := r.Direction()
-    direction = direction.Unit()
-
+    /* No hit, draw sky */
+    direction := r.Direction().Unit()
     t := 0.5*(direction.Y + 1.0)
-    
-    start := BuildVec3(0.5, 0.7, 1.0)
-    start = start.Scale(1.0-t)
-
-    end := BuildVec3(1.0, 1.0, 1.0)
-    end = end.Scale(t)
-
-    result:=start.Add(end)
-    return result
+    start := BuildVec3(0.5, 0.7, 1.0).Scale(1.0-t)
+    end := BuildVec3(1.0, 1.0, 1.0).Scale(t)
+    return start.Add(end)
 }
 
-func (r *Ray) Hit(sphere Sphere) float64 {
-	oc := r.Origin()
-	oc = oc.Subtract(sphere.Center)
-	a := oc.Dot(r.Direction(), r.Direction())
-	b := 2.0 * oc.Dot(oc, r.Direction())
-	c := oc.Dot(oc, oc) - sphere.Radius*sphere.Radius
-	disc := b*b - 4*a*c
+func (r *Ray) Hit(sphere Sphere, hr *HitRecord) bool {
+	oc := r.Origin().Subtract(sphere.Center)
+	
+    a := r.Direction().Length();
+    a = a*a
+
+	b := oc.Dot(oc, r.Direction())
+	
+    c := oc.Length()
+    c = c*c
+    c = c - sphere.Radius*sphere.Radius
+	
+    disc := b*b - a*c
+
 	if disc < 0 {
-		return -1.0
+		return false
 	} else {
-		return (-b - math.Sqrt(disc)) / (2.0 * a)
+        sqrt_disc := math.Sqrt(disc)
+		root1 := (-b - sqrt_disc) / a
+        root2 := (-b + sqrt_disc) / a
+        root := math.Min(root1, root2)
+
+        // check nearest root for acceptable range
+        if (root < hr.t) {
+            return false;
+        }
+
+        hr.t = root
+        hr.p = r.Point(hr.t)
+        hr.normal = (hr.p.Subtract(sphere.Center)).Scale(1.0/sphere.Radius)
+
+        if (oc.Dot(r.Direction(), hr.normal)) > 0 {
+            hr.normal = hr.normal.Scale(-1)
+        }
+
+        return true
 	}
 }
