@@ -1,7 +1,7 @@
 {
         "raster": {
-            "width":  1600,
-            "height": 800
+            "width":  800,
+            "height": 400
         },
         "camera": {
             "location":   {"X": 0, "Y":0, "Z":0},

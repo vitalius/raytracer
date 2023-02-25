@@ -43,6 +43,7 @@ func (r *Ray) Color(spheres []Sphere) Vec3 {
         }
     }
     if (hitSomething) {
+        // generate some color values
         return BuildVec3(1,1,1).Add(closest.normal).Scale(0.5)
     }
 
@@ -68,27 +69,31 @@ func (r *Ray) Hit(sphere Sphere, hr *HitRecord) bool {
 	
     disc := b*b - a*c
 
+    // no hit
 	if disc < 0 {
 		return false
-	} else {
-        sqrt_disc := math.Sqrt(disc)
-		root1 := (-b - sqrt_disc) / a
-        root2 := (-b + sqrt_disc) / a
-        root := math.Min(root1, root2)
-
-        // check nearest root for acceptable range
-        if (root < hr.t) {
-            return false;
-        }
-
-        hr.t = root
-        hr.p = r.Point(hr.t)
-        hr.normal = (hr.p.Subtract(sphere.Center)).Scale(1.0/sphere.Radius)
-
-        if (oc.Dot(r.Direction(), hr.normal)) > 0 {
-            hr.normal = hr.normal.Scale(-1)
-        }
-
-        return true
 	}
+
+    // find roots
+    sqrt_disc := math.Sqrt(disc)
+	root1 := (-b - sqrt_disc) / a
+    root2 := (-b + sqrt_disc) / a
+    root := math.Min(root1, root2)
+
+    // check if root is nearest or valid
+    if (root < hr.t) {
+        return false;
+    }
+
+    // set hit record values
+    hr.t = root
+    hr.p = r.Point(hr.t)
+    hr.normal = (hr.p.Subtract(sphere.Center)).Scale(1.0/sphere.Radius)
+
+    // check for normal direction, make sure its outward
+    if (oc.Dot(r.Direction(), hr.normal)) > 0 {
+        hr.normal = hr.normal.Scale(-1)
+    }
+
+    return true
 }

@@ -97,10 +97,10 @@ func main() {
             defer wg.Done()
             for y := y1 - 1; y >= y2; y-- {
 */            
-            for y := img_height-1; y >= 0; y-- {
+            for y := img_height; y >= 0; y-- {
                 for x := 0; x < img_width; x++ {
-                        u := float64(x) / float64(img_width-1)
-                        v := float64(y) / float64(img_height-1)
+                        u := float64(x) / float64(img_width)
+                        v := float64(y) / float64(img_height)
                         hor := hor_o.Scale(u)
                         ver := ver_o.Scale(v)
                         hor = hor.Add(ver)
@@ -110,7 +110,10 @@ func main() {
 
                         color := ray.Color(scene.Spheres)
                         c := color.ToRgb()
-                        b.SetPx(x,img_height-y-1,Pixel{R:c[0], G:c[1], B:c[2]})
+
+                        // ray trace from lower left corner
+                        // but record pixels from top to bottom
+                        b.SetPx(x,img_height-y,Pixel{R:c[0], G:c[1], B:c[2]})
                 }
             }            
             /*
